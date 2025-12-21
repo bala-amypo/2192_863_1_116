@@ -1,39 +1,45 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
-import java.util.*;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import com.example.demo.entity.BreachRule;
+import com.example.demo.repository.BreachRuleRepository;
+import com.example.demo.service.BreachRuleService;
 
 @Service
 public class BreachRuleServiceImpl implements BreachRuleService {
 
-    private final Map<Long, BreachRule> store = new HashMap<>();
+    private final BreachRuleRepository repository;
+
+    public BreachRuleServiceImpl(BreachRuleRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public BreachRule save(BreachRule rule) {
-        store.put(rule.getId(), rule);
-        return rule;
+        return repository.save(rule);
     }
 
     @Override
     public List<BreachRule> findAll() {
-        return new ArrayList<>(store.values());
+        return repository.findAll();
     }
 
     @Override
     public BreachRule findById(Long id) {
-        return store.get(id);
+        return repository.findById(id).orElse(null);
     }
 
     @Override
     public BreachRule update(Long id, BreachRule rule) {
         rule.setId(id);
-        store.put(id, rule);
-        return rule;
+        return repository.save(rule);
     }
 
     @Override
     public void delete(Long id) {
-        store.remove(id);
+        repository.deleteById(id);
     }
 }
