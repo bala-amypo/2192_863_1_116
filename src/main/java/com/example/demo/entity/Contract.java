@@ -1,65 +1,47 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
-public class PenaltyCalculation {
+public class Contract {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
+    private String contractNumber;
+    private String title;
 
-    @ManyToOne
-    private Contract contract;
-
-    private Integer daysDelayed;
-
-    @ManyToOne
-    private BreachRule appliedRule;
-
-    public PenaltyCalculation() {
+    public Contract() {
     }
 
-    public PenaltyCalculation(Long id, Contract contract, Integer daysDelayed, BreachRule appliedRule) {
+    public Contract(Long id, String contractNumber, String title) {
         this.id = id;
-        this.contract = contract;
-        this.daysDelayed = daysDelayed;
-        this.appliedRule = appliedRule;
+        this.contractNumber = contractNumber;
+        this.title = title;
     }
 
     public Long getId() {
         return id;
     }
 
+    public String getContractNumber() {
+        return contractNumber;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Contract getContract() {
-        return contract;
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
     }
 
-    public void setContract(Contract contract) {
-        this.contract = contract;
-    }
-
-    public Integer getDaysDelayed() {
-        return daysDelayed;
-    }
-
-    public void setDaysDelayed(Integer daysDelayed) {
-        this.daysDelayed = daysDelayed;
-    }
-
-    public BreachRule getAppliedRule() {
-        return appliedRule;
-    }
-
-    public void setAppliedRule(BreachRule appliedRule) {
-        this.appliedRule = appliedRule;
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

@@ -1,45 +1,45 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
+import com.example.demo.entity.PenaltyCalculation;
+import com.example.demo.service.PenaltyCalculationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.entity.BreachReport;
-import com.example.demo.service.BreachReportService;
+import java.util.List;
 
 @RestController
-@RequestMapping("/breach-report")
-public class BreachReportController {
+@RequestMapping("/api/penalties")
+public class PenaltyCalculationController {
+
+    private final PenaltyCalculationService service;
 
     @Autowired
-    private BreachReportService service;
-
-    @PostMapping("/post")
-    public BreachReport postData(@RequestBody BreachReport br) {
-        return service.saveData(br);
+    public PenaltyCalculationController(PenaltyCalculationService service) {
+        this.service = service;
     }
 
-    @GetMapping("/get")
-    public List<BreachReport> getAllData() {
-        return service.getAllData();
+    @PostMapping
+    public PenaltyCalculation create(@RequestBody PenaltyCalculation penaltyCalculation) {
+        return service.save(penaltyCalculation);
     }
 
-    @GetMapping("/get/{id}")
-    public BreachReport getById(@PathVariable Long id) {
-        return service.getById(id);
+    @GetMapping
+    public List<PenaltyCalculation> getAll() {
+        return service.findAll();
     }
 
-    @PutMapping("/update/{id}")
-    public BreachReport updateData(
-            @PathVariable Long id,
-            @RequestBody BreachReport br) {
-        return service.updateData(id, br);
+    @GetMapping("/{id}")
+    public PenaltyCalculation getById(@PathVariable Long id) {
+        return service.findById(id);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String deleteData(@PathVariable Long id) {
-        service.deleteData(id);
-        return "BreachReport with ID " + id + " deleted successfully!";
+    @PutMapping("/{id}")
+    public PenaltyCalculation update(@PathVariable Long id, @RequestBody PenaltyCalculation penaltyCalculation) {
+        return service.update(id, penaltyCalculation);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }
