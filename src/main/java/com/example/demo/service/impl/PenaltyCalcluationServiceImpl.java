@@ -1,41 +1,49 @@
-package com.example.demo.service.impl;
+package com.example.demo.service;
 
-import java.util.*;
-
+import com.example.demo.entity.PenaltyCalculation;
+import com.example.demo.repository.PenaltyCalculationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.entity.BreachReport;
-import com.example.demo.service.BreachReportService;
+import java.util.List;
 
 @Service
-public class BreachReportServiceImpl implements BreachReportService {
+public class PenaltyCalculationServiceImpl implements PenaltyCalculationService {
 
-    private Map<Long, BreachReport> mp = new HashMap<>();
+    private final PenaltyCalculationRepository repository;
 
-    @Override
-    public BreachReport saveData(BreachReport br) {
-        mp.put(br.getId(), br);
-        return br;
+    @Autowired
+    public PenaltyCalculationServiceImpl(PenaltyCalculationRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public List<BreachReport> getAllData() {
-        return new ArrayList<>(mp.values());
+    public PenaltyCalculation save(PenaltyCalculation penaltyCalculation) {
+        return repository.save(penaltyCalculation);
     }
 
     @Override
-    public BreachReport getById(Long id) {
-        return mp.get(id);
+    public List<PenaltyCalculation> findAll() {
+        return repository.findAll();
     }
 
     @Override
-    public BreachReport updateData(Long id, BreachReport br) {
-        mp.put(id, br);
-        return br;
+    public PenaltyCalculation findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PenaltyCalculation not found with id " + id));
     }
 
     @Override
-    public void deleteData(Long id) {
-        mp.remove(id);
+    public PenaltyCalculation update(Long id, PenaltyCalculation penaltyCalculation) {
+        PenaltyCalculation existing = findById(id);
+        existing.setContract(penaltyCalculation.getContract());
+        existing.setDaysDelayed(penaltyCalculation.getDaysDelayed());
+        existing.setAppliedRule(penaltyCalculation.getAppliedRule());
+        return repository.save(existing);
+    }
+
+    @Override
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }

@@ -1,45 +1,39 @@
-package com.example.demo.service;
-
-import com.example.demo.entity.PenaltyCalculation;
-import com.example.demo.repository.PenaltyCalculationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+package com.example.demo.service.impl;
 
 import java.util.List;
 
-@Service
-public class PenaltyCalculationServiceImpl implements PenaltyCalculationService {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    private final PenaltyCalculationRepository repository;
+import com.example.demo.entity.Contract;
+import com.example.demo.repository.ContractRepository;
+import com.example.demo.service.ContractService;
+
+@Service
+public class ContractServiceImpl implements ContractService {
 
     @Autowired
-    public PenaltyCalculationServiceImpl(PenaltyCalculationRepository repository) {
-        this.repository = repository;
+    private ContractRepository repository;
+
+    @Override
+    public Contract save(Contract contract) {
+        return repository.save(contract);
     }
 
     @Override
-    public PenaltyCalculation save(PenaltyCalculation penaltyCalculation) {
-        return repository.save(penaltyCalculation);
-    }
-
-    @Override
-    public List<PenaltyCalculation> findAll() {
+    public List<Contract> findAll() {
         return repository.findAll();
     }
 
     @Override
-    public PenaltyCalculation findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PenaltyCalculation not found with id " + id));
+    public Contract findById(Long id) {
+        return repository.findById(id).orElse(null);
     }
 
     @Override
-    public PenaltyCalculation update(Long id, PenaltyCalculation penaltyCalculation) {
-        PenaltyCalculation existing = findById(id);
-        existing.setContract(penaltyCalculation.getContract());
-        existing.setDaysDelayed(penaltyCalculation.getDaysDelayed());
-        existing.setAppliedRule(penaltyCalculation.getAppliedRule());
-        return repository.save(existing);
+    public Contract update(Long id, Contract contract) {
+        contract.setId(id);
+        return repository.save(contract);
     }
 
     @Override

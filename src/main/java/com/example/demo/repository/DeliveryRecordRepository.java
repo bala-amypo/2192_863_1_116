@@ -1,8 +1,9 @@
 package com.example.demo.repository;
 
+import com.example.demo.entity.DeliveryRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.demo.entity.User;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByEmail(String email);
+@Repository
+public interface DeliveryRecordRepository extends JpaRepository<DeliveryRecord, Long> {
 }
