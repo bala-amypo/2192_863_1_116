@@ -1,51 +1,45 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import java.math.BigDecimal;
 
 @Entity
-public class DeliveryRecord {
+public class BreachRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Contract contract;
+    private String ruleName;
 
-    @Temporal(TemporalType.DATE)
-    private Date deliveryDate;
+    private BigDecimal penaltyPerDay;
 
-    private String notes;
+    private Double maxPenaltyPercentage;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Boolean active;
 
-    public DeliveryRecord() {
-    }
+    public BreachRule() {}
 
-    public DeliveryRecord(Long id, Contract contract, Date deliveryDate) {
-        this.id = id;
-        this.contract = contract;
-        this.deliveryDate = deliveryDate;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
+    public BreachRule(String ruleName, BigDecimal penaltyPerDay,
+                      Double maxPenaltyPercentage, Boolean active) {
+        this.ruleName = ruleName;
+        this.penaltyPerDay = penaltyPerDay;
+        this.maxPenaltyPercentage = maxPenaltyPercentage;
+        this.active = active;
     }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Contract getContract() { return contract; }
-    public void setContract(Contract contract) { this.contract = contract; }
+    public String getRuleName() { return ruleName; }
+    public void setRuleName(String ruleName) { this.ruleName = ruleName; }
 
-    public Date getDeliveryDate() { return deliveryDate; }
-    public void setDeliveryDate(Date deliveryDate) { this.deliveryDate = deliveryDate; }
+    public BigDecimal getPenaltyPerDay() { return penaltyPerDay; }
+    public void setPenaltyPerDay(BigDecimal penaltyPerDay) { this.penaltyPerDay = penaltyPerDay; }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public Double getMaxPenaltyPercentage() { return maxPenaltyPercentage; }
+    public void setMaxPenaltyPercentage(Double maxPenaltyPercentage) { this.maxPenaltyPercentage = maxPenaltyPercentage; }
 
-    public Date getCreatedAt() { return createdAt; }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 }

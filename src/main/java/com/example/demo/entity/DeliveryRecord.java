@@ -1,62 +1,51 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
-@Table(name = "users")
-public class User {
+public class DeliveryRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @ManyToOne
+    private Contract contract;
 
-    @Column(nullable = false)
-    private String password;
+    @Temporal(TemporalType.DATE)
+    private Date deliveryDate;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private String notes;
 
-    public User() {}
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
 
-    public User(String email, String password, LocalDateTime createdAt) {
-        this.email = email;
-        this.password = password;
-        this.createdAt = createdAt;
+    public DeliveryRecord() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
+    public DeliveryRecord(Long id, Contract contract, Date deliveryDate) {
         this.id = id;
+        this.contract = contract;
+        this.deliveryDate = deliveryDate;
     }
 
-    public String getEmail() {
-        return email;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getPassword() {
-        return password;
-    }
- 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public Contract getContract() { return contract; }
+    public void setContract(Contract contract) { this.contract = contract; }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
- 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    public Date getDeliveryDate() { return deliveryDate; }
+    public void setDeliveryDate(Date deliveryDate) { this.deliveryDate = deliveryDate; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public Date getCreatedAt() { return createdAt; }
 }

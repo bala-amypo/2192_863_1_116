@@ -1,31 +1,62 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-public class BreachReport {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int daysDelayed;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    private String remark;
+    @Column(nullable = false)
+    private String password;
 
-    public BreachReport() {}
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 
-    public BreachReport(int daysDelayed, String remark) {
-        this.daysDelayed = daysDelayed;
-        this.remark = remark;
+    public User() {}
+
+    public User(String email, String password, LocalDateTime createdAt) {
+        this.email = email;
+        this.password = password;
+        this.createdAt = createdAt;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public int getDaysDelayed() { return daysDelayed; }
-    public void setDaysDelayed(int daysDelayed) { this.daysDelayed = daysDelayed; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getRemark() { return remark; }
-    public void setRemark(String remark) { this.remark = remark; }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+ 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+ 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
