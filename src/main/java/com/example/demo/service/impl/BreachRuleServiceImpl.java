@@ -1,49 +1,39 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.DeliveryRecord;
-import com.example.demo.repository.DeliveryRecordRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.*;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import com.example.demo.entity.BreachRule;
 
 @Service
-public class DeliveryRecordServiceImpl implements DeliveryRecordService {
+public class BreachRuleServiceImpl implements BreachRuleService {
 
-    private final DeliveryRecordRepository repository;
+    private final Map<Long, BreachRule> store = new HashMap<>();
 
-    @Autowired
-    public DeliveryRecordServiceImpl(DeliveryRecordRepository repository) {
-        this.repository = repository;
+    @Override
+    public BreachRule save(BreachRule rule) {
+        store.put(rule.getId(), rule);
+        return rule;
     }
 
     @Override
-    public DeliveryRecord save(DeliveryRecord deliveryRecord) {
-        return repository.save(deliveryRecord);
+    public List<BreachRule> findAll() {
+        return new ArrayList<>(store.values());
     }
 
     @Override
-    public List<DeliveryRecord> findAll() {
-        return repository.findAll();
+    public BreachRule findById(Long id) {
+        return store.get(id);
     }
 
     @Override
-    public DeliveryRecord findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("DeliveryRecord not found with id " + id));
-    }
-
-    @Override
-    public DeliveryRecord update(Long id, DeliveryRecord deliveryRecord) {
-        DeliveryRecord existing = findById(id);
-        existing.setContract(deliveryRecord.getContract());
-        existing.setDeliveryDate(deliveryRecord.getDeliveryDate());
-        existing.setNotes(deliveryRecord.getNotes());
-        return repository.save(existing);
+    public BreachRule update(Long id, BreachRule rule) {
+        rule.setId(id);
+        store.put(id, rule);
+        return rule;
     }
 
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+        store.remove(id);
     }
 }

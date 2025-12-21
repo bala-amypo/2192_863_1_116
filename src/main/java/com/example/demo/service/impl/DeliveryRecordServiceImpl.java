@@ -1,50 +1,49 @@
-package com.example.demo.service.impl;
+package com.example.demo.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.example.demo.entity.DeliveryRecord;
+import com.example.demo.repository.DeliveryRecordRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.UserService;
+import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class DeliveryRecordServiceImpl implements DeliveryRecordService {
 
-    private final UserRepository repository;
+    private final DeliveryRecordRepository repository;
 
-    public UserServiceImpl(UserRepository repository) {
+    @Autowired
+    public DeliveryRecordServiceImpl(DeliveryRecordRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public User createUser(User user) {
-        user.setCreatedAt(LocalDateTime.now());
-        return repository.save(user);
+    public DeliveryRecord save(DeliveryRecord deliveryRecord) {
+        return repository.save(deliveryRecord);
     }
 
     @Override
-    public User getUserById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-    }
-
-    @Override
-    public List<User> getAllUsers() {
+    public List<DeliveryRecord> findAll() {
         return repository.findAll();
     }
 
     @Override
-    public User updateUser(Long id, User user) {
-        User existing = getUserById(id);
-        existing.setEmail(user.getEmail());
-        existing.setPassword(user.getPassword());
+    public DeliveryRecord findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("DeliveryRecord not found with id " + id));
+    }
+
+    @Override
+    public DeliveryRecord update(Long id, DeliveryRecord deliveryRecord) {
+        DeliveryRecord existing = findById(id);
+        existing.setContract(deliveryRecord.getContract());
+        existing.setDeliveryDate(deliveryRecord.getDeliveryDate());
+        existing.setNotes(deliveryRecord.getNotes());
         return repository.save(existing);
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void delete(Long id) {
         repository.deleteById(id);
     }
 }

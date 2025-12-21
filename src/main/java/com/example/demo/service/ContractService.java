@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.PenaltyCalculation;
 import java.util.List;
+import com.example.demo.entity.Contract;
 
-public interface PenaltyCalculationService {
+public interface ContractService {
 
-    PenaltyCalculation save(PenaltyCalculation penaltyCalculation);
+    Contract save(Contract contract);
 
-    List<PenaltyCalculation> findAll();
+    List<Contract> findAll();
 
-    PenaltyCalculation findById(Long id);
+    Contract findById(Long id);
 
-    PenaltyCalculation update(Long id, PenaltyCalculation penaltyCalculation);
+    Contract update(Long id, Contract contract);
 
     void delete(Long id);
 }

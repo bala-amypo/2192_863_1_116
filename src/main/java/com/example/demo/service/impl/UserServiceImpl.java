@@ -1,39 +1,50 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
-import com.example.demo.entity.BreachRule;
+
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
 
 @Service
-public class BreachRuleServiceImpl implements BreachRuleService {
+public class UserServiceImpl implements UserService {
 
-    private final Map<Long, BreachRule> store = new HashMap<>();
+    private final UserRepository repository;
 
-    @Override
-    public BreachRule save(BreachRule rule) {
-        store.put(rule.getId(), rule);
-        return rule;
+    public UserServiceImpl(UserRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public List<BreachRule> findAll() {
-        return new ArrayList<>(store.values());
+    public User createUser(User user) {
+        user.setCreatedAt(LocalDateTime.now());
+        return repository.save(user);
     }
 
     @Override
-    public BreachRule findById(Long id) {
-        return store.get(id);
+    public User getUserById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
     @Override
-    public BreachRule update(Long id, BreachRule rule) {
-        rule.setId(id);
-        store.put(id, rule);
-        return rule;
+    public List<User> getAllUsers() {
+        return repository.findAll();
     }
 
     @Override
-    public void delete(Long id) {
-        store.remove(id);
+    public User updateUser(Long id, User user) {
+        User existing = getUserById(id);
+        existing.setEmail(user.getEmail());
+        existing.setPassword(user.getPassword());
+        return repository.save(existing);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        repository.deleteById(id);
     }
 }

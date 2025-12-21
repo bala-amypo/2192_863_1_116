@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.PenaltyCalculation;
 import java.util.List;
-import com.example.demo.entity.BreachReport;
 
-public interface BreachReportService {
+public interface PenaltyCalculationService {
 
-    BreachReport saveData(BreachReport br);
+    PenaltyCalculation save(PenaltyCalculation penaltyCalculation);
 
-    List<BreachReport> getAllData();
+    List<PenaltyCalculation> findAll();
 
-    BreachReport getById(Long id);
+    PenaltyCalculation findById(Long id);
 
-    BreachReport updateData(Long id, BreachReport br);
+    PenaltyCalculation update(Long id, PenaltyCalculation penaltyCalculation);
 
-    void deleteData(Long id);
+    void delete(Long id);
 }
