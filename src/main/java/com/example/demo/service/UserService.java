@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
 import java.util.List;
-import com.example.demo.entity.BreachRule;
+import com.example.demo.entity.User;
 
-public interface BreachRuleService {
+public interface UserService {
 
-    BreachRule save(BreachRule rule);
+    User createUser(User user);
 
-    List<BreachRule> findAll();
+    User getUserById(Long id);
 
-    BreachRule findById(Long id);
+    List<User> getAllUsers();
 
-    BreachRule update(Long id, BreachRule rule);
+    User updateUser(Long id, User user);
 
-    void delete(Long id);
+    void deleteUser(Long id);
 }

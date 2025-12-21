@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.DeliveryRecord;
 import java.util.List;
-import com.example.demo.entity.User;
 
-public interface UserService {
+public interface DeliveryRecordService {
 
-    User createUser(User user);
+    DeliveryRecord save(DeliveryRecord deliveryRecord);
 
-    User getUserById(Long id);
+    List<DeliveryRecord> findAll();
 
-    List<User> getAllUsers();
+    DeliveryRecord findById(Long id);
 
-    User updateUser(Long id, User user);
+    DeliveryRecord update(Long id, DeliveryRecord deliveryRecord);
 
-    void deleteUser(Long id);
+    void delete(Long id);
 }

@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.DeliveryRecord;
 import java.util.List;
+import com.example.demo.entity.BreachRule;
 
-public interface DeliveryRecordService {
+public interface BreachRuleService {
 
-    DeliveryRecord save(DeliveryRecord deliveryRecord);
+    BreachRule save(BreachRule rule);
 
-    List<DeliveryRecord> findAll();
+    List<BreachRule> findAll();
 
-    DeliveryRecord findById(Long id);
+    BreachRule findById(Long id);
 
-    DeliveryRecord update(Long id, DeliveryRecord deliveryRecord);
+    BreachRule update(Long id, BreachRule rule);
 
     void delete(Long id);
 }
