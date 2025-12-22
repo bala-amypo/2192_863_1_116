@@ -30,7 +30,7 @@ public class BreachReportController {
         return service.getById(id);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{id}" )
     public BreachReport updateData(
             @PathVariable Long id,
             @RequestBody BreachReport br) {
