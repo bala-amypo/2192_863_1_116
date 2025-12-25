@@ -1,45 +1,37 @@
 package com.example.demo.service.impl;
 
-import java.util.List;
+import com.example.demo.entity.*;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.*;
+import java.math.BigDecimal;
+import java.util.*;
 
-import org.springframework.stereotype.Service;
+public class BreachRuleServiceImpl {
 
-import com.example.demo.entity.BreachRule;
-import com.example.demo.repository.BreachRuleRepository;
-import com.example.demo.service.BreachRuleService;
+    private BreachRuleRepository breachRuleRepository;
 
-@Service
-public class BreachRuleServiceImpl implements BreachRuleService {
-
-    private final BreachRuleRepository repository;
-
-    public BreachRuleServiceImpl(BreachRuleRepository repository) {
-        this.repository = repository;
+    public BreachRule createRule(BreachRule r) {
+        if (r.getPenaltyPerDay().compareTo(BigDecimal.ZERO) <= 0)
+            throw new IllegalArgumentException();
+        if (r.getMaxPenaltyPercentage() > 100)
+            throw new IllegalArgumentException();
+        return breachRuleRepository.save(r);
     }
 
-    @Override
-    public BreachRule save(BreachRule rule) {
-        return repository.save(rule);
+    public void deactivateRule(Long id) {
+        BreachRule r = breachRuleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Rule not found"));
+        r.setActive(false);
+        breachRuleRepository.save(r);
     }
 
-    @Override
-    public List<BreachRule> findAll() {
-        return repository.findAll();
+    public BreachRule getActiveDefaultOrFirst() {
+        return breachRuleRepository
+                .findFirstByActiveTrueOrderByIsDefaultRuleDesc()
+                .orElseThrow(() -> new ResourceNotFoundException("No active breach rule"));
     }
 
-    @Override
-    public BreachRule findById(Long id) {
-        return repository.findById(id).orElse(null);
-    }
-
-    @Override
-    public BreachRule update(Long id, BreachRule rule) {
-        rule.setId(id);
-        return repository.save(rule);
-    }
-
-    @Override
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public List<BreachRule> getAllRules() {
+        return breachRuleRepository.findAll();
     }
 }
