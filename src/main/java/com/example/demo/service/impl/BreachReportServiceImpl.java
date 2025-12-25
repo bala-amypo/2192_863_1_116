@@ -1,41 +1,38 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.entity.*;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.*;
 import java.util.*;
 
-import org.springframework.stereotype.Service;
+public class BreachReportServiceImpl {
 
-import com.example.demo.entity.BreachReport;
-import com.example.demo.service.BreachReportService;
+    private BreachReportRepository breachReportRepository;
+    private PenaltyCalculationRepository penaltyCalculationRepository;
+    private ContractRepository contractRepository;
 
-@Service
-public class BreachReportServiceImpl implements BreachReportService {
+    public BreachReport generateReport(Long id) {
+        Contract c = contractRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Contract not found"));
 
-    private Map<Long, BreachReport> mp = new HashMap<>();
+        PenaltyCalculation pc = penaltyCalculationRepository
+                .findTopByContractIdOrderByCalculatedAtDesc(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No penalty calculation"));
 
-    @Override
-    public BreachReport saveData(BreachReport br) {
-        mp.put(br.getId(), br);
-        return br;
+        BreachReport r = BreachReport.builder()
+                .contract(c)
+                .daysDelayed(pc.getDaysDelayed())
+                .penaltyAmount(pc.getCalculatedPenalty())
+                .build();
+
+        return breachReportRepository.save(r);
     }
 
-    @Override
-    public List<BreachReport> getAllData() {
-        return new ArrayList<>(mp.values());
+    public List<BreachReport> getReportsForContract(Long id) {
+        return breachReportRepository.findByContractId(id);
     }
 
-    @Override
-    public BreachReport getById(Long id) {
-        return mp.get(id);
-    }
-
-    @Override
-    public BreachReport updateData(Long id, BreachReport br) {
-        mp.put(id, br);
-        return br;
-    }
-
-    @Override
-    public void deleteData(Long id) {
-        mp.remove(id);
+    public List<BreachReport> getAllReports() {
+        return breachReportRepository.findAll();
     }
 }
