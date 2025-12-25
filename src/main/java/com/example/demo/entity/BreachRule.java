@@ -2,20 +2,20 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Entity
 @Getter @Setter
 @Builder @NoArgsConstructor @AllArgsConstructor
-public class DeliveryRecord {
+public class BreachRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Contract contract;
-
-    private LocalDate deliveryDate;
-    private String notes;
+    private String ruleName;
+    private BigDecimal penaltyPerDay;
+    private Double maxPenaltyPercentage;
+    private boolean active;
+    private boolean isDefaultRule;
 }
