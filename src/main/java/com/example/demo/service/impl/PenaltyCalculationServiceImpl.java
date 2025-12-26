@@ -1,55 +1,49 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
+import com.example.demo.entity.DeliveryRecord;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.*;
-import java.math.BigDecimal;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import com.example.demo.repository.ContractRepository;
+import com.example.demo.repository.DeliveryRecordRepository;
+import com.example.demo.service.DeliveryRecordService;
+import org.springframework.stereotype.Service;
+import java.time.LocalDate;
+import java.util.List;
 
-public class PenaltyCalculationServiceImpl {
-
-    private ContractRepository contractRepository;
+@Service
+public class DeliveryRecordServiceImpl implements DeliveryRecordService {
+    
     private DeliveryRecordRepository deliveryRecordRepository;
-    private BreachRuleRepository breachRuleRepository;
-    private PenaltyCalculationRepository penaltyCalculationRepository;
-
-    public PenaltyCalculation calculatePenalty(Long id) {
-        Contract c = contractRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Contract not found"));
-
-        DeliveryRecord dr = deliveryRecordRepository
-                .findFirstByContractIdOrderByDeliveryDateDesc(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No delivery record"));
-
-        long days = ChronoUnit.DAYS.between(c.getAgreedDeliveryDate(), dr.getDeliveryDate());
-        days = Math.max(days, 0);
-
-        BreachRule rule = breachRuleRepository
-                .findFirstByActiveTrueOrderByIsDefaultRuleDesc()
-                .orElseThrow();
-
-        BigDecimal penalty = rule.getPenaltyPerDay().multiply(BigDecimal.valueOf(days));
-        BigDecimal maxCap = c.getBaseContractValue()
-                .multiply(BigDecimal.valueOf(rule.getMaxPenaltyPercentage() / 100));
-
-        penalty = penalty.min(maxCap);
-
-        PenaltyCalculation pc = PenaltyCalculation.builder()
-                .contract(c)
-                .daysDelayed((int) days)
-                .calculatedPenalty(penalty)
-                .build();
-
-        return penaltyCalculationRepository.save(pc);
+    private ContractRepository contractRepository;
+    
+    public DeliveryRecordServiceImpl() {}
+    
+    public DeliveryRecordServiceImpl(DeliveryRecordRepository deliveryRecordRepository, ContractRepository contractRepository) {
+        this.deliveryRecordRepository = deliveryRecordRepository;
+        this.contractRepository = contractRepository;
     }
-
-    public List<PenaltyCalculation> getCalculationsForContract(Long id) {
-        return penaltyCalculationRepository.findByContractId(id);
+    
+    @Override
+    public DeliveryRecord createDeliveryRecord(DeliveryRecord record) {
+        if (record.getDeliveryDate().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Delivery date cannot be in the future");
+        }
+        return deliveryRecordRepository.save(record);
     }
-
-    public PenaltyCalculation getCalculationById(Long id) {
-        return penaltyCalculationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Calculation not found"));
+    
+    @Override
+    public List<DeliveryRecord> getDeliveryRecordsForContract(Long contractId) {
+        return deliveryRecordRepository.findByContractIdOrderByDeliveryDateAsc(contractId);
+    }
+    
+    @Override
+    public DeliveryRecord getLatestDeliveryRecord(Long contractId) {
+        return deliveryRecordRepository.findFirstByContractIdOrderByDeliveryDateDesc(contractId)
+            .orElseThrow(() -> new ResourceNotFoundException("No delivery records found"));
+    }
+    
+    @Override
+    public DeliveryRecord getRecordById(Long id) {
+        return deliveryRecordRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Delivery record not found"));
     }
 }
