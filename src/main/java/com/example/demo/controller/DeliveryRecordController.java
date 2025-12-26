@@ -3,43 +3,34 @@ package com.example.demo.controller;
 import com.example.demo.entity.DeliveryRecord;
 import com.example.demo.service.DeliveryRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/delivery-records")
 public class DeliveryRecordController {
-
-    private final DeliveryRecordService service;
-
+    
     @Autowired
-    public DeliveryRecordController(DeliveryRecordService service) {
-        this.service = service;
-    }
-
+    private DeliveryRecordService deliveryRecordService;
+    
     @PostMapping
-    public DeliveryRecord create(@RequestBody DeliveryRecord deliveryRecord) {
-        return service.save(deliveryRecord);
+    public ResponseEntity<DeliveryRecord> createDeliveryRecord(@RequestBody DeliveryRecord record) {
+        return ResponseEntity.ok(deliveryRecordService.createDeliveryRecord(record));
     }
-
-    @GetMapping
-    public List<DeliveryRecord> getAll() {
-        return service.findAll();
-    }
-
+    
     @GetMapping("/{id}")
-    public DeliveryRecord getById(@PathVariable Long id) {
-        return service.findById(id);
+    public ResponseEntity<DeliveryRecord> getRecord(@PathVariable Long id) {
+        return ResponseEntity.ok(deliveryRecordService.getRecordById(id));
     }
-
-    @PutMapping("/{id}")
-    public DeliveryRecord update(@PathVariable Long id, @RequestBody DeliveryRecord deliveryRecord) {
-        return service.update(id, deliveryRecord);
+    
+    @GetMapping("/contract/{contractId}")
+    public ResponseEntity<List<DeliveryRecord>> getRecordsForContract(@PathVariable Long contractId) {
+        return ResponseEntity.ok(deliveryRecordService.getDeliveryRecordsForContract(contractId));
     }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    
+    @GetMapping("/contract/{contractId}/latest")
+    public ResponseEntity<DeliveryRecord> getLatestRecord(@PathVariable Long contractId) {
+        return ResponseEntity.ok(deliveryRecordService.getLatestDeliveryRecord(contractId));
     }
 }
