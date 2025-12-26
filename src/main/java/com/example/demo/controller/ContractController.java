@@ -1,45 +1,42 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.entity.Contract;
 import com.example.demo.service.ContractService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
-@RequestMapping("/contract")
+@RequestMapping("/api/contracts")
 public class ContractController {
-
+    
     @Autowired
-    private ContractService service;
-
-    @PostMapping("/post")
-    public Contract create(@RequestBody Contract contract) {
-        return service.save(contract);
+    private ContractService contractService;
+    
+    @PostMapping
+    public ResponseEntity<Contract> createContract(@RequestBody Contract contract) {
+        return ResponseEntity.ok(contractService.createContract(contract));
     }
-
-    @GetMapping("/get")
-    public List<Contract> getAll() {
-        return service.findAll();
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Contract> updateContract(@PathVariable Long id, @RequestBody Contract contract) {
+        return ResponseEntity.ok(contractService.updateContract(id, contract));
     }
-
-    @GetMapping("/get/{id}")
-    public Contract getById(@PathVariable Long id) {
-        return service.findById(id);
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<Contract> getContract(@PathVariable Long id) {
+        return ResponseEntity.ok(contractService.getContractById(id));
     }
-
-    @PutMapping("/update/{id}")
-    public Contract update(
-            @PathVariable Long id,
-            @RequestBody Contract contract) {
-        return service.update(id, contract);
+    
+    @GetMapping
+    public ResponseEntity<List<Contract>> getAllContracts() {
+        return ResponseEntity.ok(contractService.getAllContracts());
     }
-
-    @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
-        service.delete(id);
-        return "Contract with ID " + id + " deleted successfully!";
+    
+    @PutMapping("/{id}/update-status")
+    public ResponseEntity<Void> updateContractStatus(@PathVariable Long id) {
+        contractService.updateContractStatus(id);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,46 +1,42 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.entity.BreachRule;
 import com.example.demo.service.BreachRuleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
-@RequestMapping("/breach-rule")
+@RequestMapping("/api/breach-rules")
 public class BreachRuleController {
-
+    
     @Autowired
-    private BreachRuleService service;
-
-    @PostMapping("/post")
-    public BreachRule create(@RequestBody BreachRule rule) {
-        return service.save(rule);
+    private BreachRuleService breachRuleService;
+    
+    @PostMapping
+    public ResponseEntity<BreachRule> createRule(@RequestBody BreachRule rule) {
+        return ResponseEntity.ok(breachRuleService.createRule(rule));
     }
-
-    @GetMapping("/get")
-    public List<BreachRule> getAll() {
-        return service.findAll();
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<BreachRule> updateRule(@PathVariable Long id, @RequestBody BreachRule rule) {
+        return ResponseEntity.ok(breachRuleService.updateRule(id, rule));
     }
-
-    @GetMapping("/get/{id}")
-    public BreachRule getById(@PathVariable Long id) {
-        return service.findById(id);
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<BreachRule> getRule(@PathVariable Long id) {
+        return ResponseEntity.ok(breachRuleService.getRuleById(id));
     }
-
-    @PutMapping("/update/{id}")
-    public BreachRule update(
-            @PathVariable Long id,
-            @RequestBody BreachRule rule) {
-        return service.update(id, rule);
+    
+    @GetMapping
+    public ResponseEntity<List<BreachRule>> getAllRules() {
+        return ResponseEntity.ok(breachRuleService.getAllRules());
     }
-
-    @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
-        service.delete(id);
-        return "BreachRule with ID " + id + " deleted successfully!";
+    
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivateRule(@PathVariable Long id) {
+        breachRuleService.deactivateRule(id);
+        return ResponseEntity.ok().build();
     }
 }
-
