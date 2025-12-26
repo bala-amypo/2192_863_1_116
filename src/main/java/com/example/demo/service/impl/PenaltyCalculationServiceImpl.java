@@ -1,49 +1,82 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.entity.BreachRule;
+import com.example.demo.entity.Contract;
 import com.example.demo.entity.DeliveryRecord;
+import com.example.demo.entity.PenaltyCalculation;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.BreachRuleRepository;
 import com.example.demo.repository.ContractRepository;
 import com.example.demo.repository.DeliveryRecordRepository;
-import com.example.demo.service.DeliveryRecordService;
+import com.example.demo.repository.PenaltyCalculationRepository;
+import com.example.demo.service.PenaltyCalculationService;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
-public class DeliveryRecordServiceImpl implements DeliveryRecordService {
+public class PenaltyCalculationServiceImpl implements PenaltyCalculationService {
     
-    private DeliveryRecordRepository deliveryRecordRepository;
     private ContractRepository contractRepository;
+    private DeliveryRecordRepository deliveryRecordRepository;
+    private BreachRuleRepository breachRuleRepository;
+    private PenaltyCalculationRepository penaltyCalculationRepository;
     
-    public DeliveryRecordServiceImpl() {}
+    public PenaltyCalculationServiceImpl() {}
     
-    public DeliveryRecordServiceImpl(DeliveryRecordRepository deliveryRecordRepository, ContractRepository contractRepository) {
-        this.deliveryRecordRepository = deliveryRecordRepository;
+    public PenaltyCalculationServiceImpl(ContractRepository contractRepository, 
+                                       DeliveryRecordRepository deliveryRecordRepository,
+                                       BreachRuleRepository breachRuleRepository,
+                                       PenaltyCalculationRepository penaltyCalculationRepository) {
         this.contractRepository = contractRepository;
+        this.deliveryRecordRepository = deliveryRecordRepository;
+        this.breachRuleRepository = breachRuleRepository;
+        this.penaltyCalculationRepository = penaltyCalculationRepository;
     }
     
     @Override
-    public DeliveryRecord createDeliveryRecord(DeliveryRecord record) {
-        if (record.getDeliveryDate().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Delivery date cannot be in the future");
-        }
-        return deliveryRecordRepository.save(record);
+    public PenaltyCalculation calculatePenalty(Long contractId) {
+        Contract contract = contractRepository.findById(contractId)
+            .orElseThrow(() -> new ResourceNotFoundException("Contract not found"));
+        
+        DeliveryRecord latestDelivery = deliveryRecordRepository.findFirstByContractIdOrderByDeliveryDateDesc(contractId)
+            .orElseThrow(() -> new ResourceNotFoundException("No delivery record"));
+        
+        BreachRule rule = breachRuleRepository.findFirstByActiveTrueOrderByIsDefaultRuleDesc()
+            .orElseThrow(() -> new ResourceNotFoundException("No active breach rule"));
+        
+        LocalDate agreedDate = contract.getAgreedDeliveryDate();
+        LocalDate actualDate = latestDelivery.getDeliveryDate();
+        
+        int daysDelayed = Math.max(0, (int) ChronoUnit.DAYS.between(agreedDate, actualDate));
+        
+        BigDecimal penaltyByDays = rule.getPenaltyPerDay().multiply(BigDecimal.valueOf(daysDelayed));
+        BigDecimal maxPenalty = contract.getBaseContractValue()
+            .multiply(BigDecimal.valueOf(rule.getMaxPenaltyPercentage()))
+            .divide(BigDecimal.valueOf(100));
+        
+        BigDecimal finalPenalty = penaltyByDays.min(maxPenalty);
+        
+        PenaltyCalculation calculation = PenaltyCalculation.builder()
+            .contract(contract)
+            .daysDelayed(daysDelayed)
+            .calculatedPenalty(finalPenalty)
+            .appliedRule(rule)
+            .build();
+        
+        return penaltyCalculationRepository.save(calculation);
     }
     
     @Override
-    public List<DeliveryRecord> getDeliveryRecordsForContract(Long contractId) {
-        return deliveryRecordRepository.findByContractIdOrderByDeliveryDateAsc(contractId);
+    public PenaltyCalculation getCalculationById(Long id) {
+        return penaltyCalculationRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Calculation not found"));
     }
     
     @Override
-    public DeliveryRecord getLatestDeliveryRecord(Long contractId) {
-        return deliveryRecordRepository.findFirstByContractIdOrderByDeliveryDateDesc(contractId)
-            .orElseThrow(() -> new ResourceNotFoundException("No delivery records found"));
-    }
-    
-    @Override
-    public DeliveryRecord getRecordById(Long id) {
-        return deliveryRecordRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Delivery record not found"));
+    public List<PenaltyCalculation> getCalculationsForContract(Long contractId) {
+        return penaltyCalculationRepository.findByContractId(contractId);
     }
 }
